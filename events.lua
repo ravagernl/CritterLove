@@ -30,6 +30,5 @@ end
 frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(self, event, arg1, ...)
     if ProcessOnLoad and event == "ADDON_LOADED" then ProcessOnLoad(arg1) end
-    if event == "PLAYER_LOGOUT" then ProcessLogout() end
     if ns[event] then ns[event](event, arg1, ...) end
 end)
