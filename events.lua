@@ -1,34 +1,45 @@
-local _, ns = ...
+local _, addon = ...
 
 local frame = CreateFrame("Frame")
 
-function ns.RegisterEvent(event, func)
+addon.eventFrame = frame
+function addon:RegisterEvent(event, func)
+    self:Debug('Registering ' ..event..' to '.. (func or '<self>:'..event))
     frame:RegisterEvent(event)
-    if func then ns[event] = func end
+    if func then self[event] = func end
+    assert(self[event], 'Missing event in table: '..event)
 end
 
-function ns.UnregisterEvent(event)
+function addon:UnregisterEvent(event)
+    self:Debug('Unregistering ' ..event)
     frame:UnregisterEvent(event)
 end
 
-function ns:UnregisterAllEvents()
+function addon:UnregisterAllEvents()
+    self:Debug('Unregistering all events')
     frame:UnregisterAllEvents()
 end
 
-local function ProcessOnLoad(arg1)
-    if arg1 ~= ns.name then return end
-
-    if ns.OnLoad then
-        ns:OnLoad()
-        ns.OnLoad = nil
+do
+    local function OnEvent(self, event, ...)
+        addon:Debug('Event: '.. event, ...)
+        if addon[event] then addon[event](addon, ...) end
     end
 
-    ProcessOnLoad = nil
-    if not ns.ADDON_LOADED then frame:UnregisterEvent("ADDON_LOADED") end
-end
+    local function ProcessOnLoad(self, event, arg1)
+        if arg1 ~= addon.name then return end
 
-frame:RegisterEvent("ADDON_LOADED")
-frame:SetScript("OnEvent", function(self, event, arg1, ...)
-    if ProcessOnLoad and event == "ADDON_LOADED" then ProcessOnLoad(arg1) end
-    if ns[event] then ns[event](event, arg1, ...) end
-end)
+        if addon.OnLoad then
+            addon:OnLoad()
+            addon.OnLoad = nil
+        end
+
+        ProcessOnLoad = nil
+        if not addon.ADDON_LOADED then frame:UnregisterEvent("ADDON_LOADED") end
+
+        self:SetScript('OnEvent', OnEvent)
+    end
+
+    frame:RegisterEvent("ADDON_LOADED")
+    frame:SetScript("OnEvent", ProcessOnLoad)
+end

@@ -1,39 +1,147 @@
-local _, ns = ...
+local _, addon = ...
+local L = addon.localization
+addon.localization = nil
 
-local achievements = {
+local EMOTE_LOVE = EMOTE152_TOKEN:lower()
+
+addon.achievementIds = {
     1206, -- To All The Squirrels I've Loved Before (azeroth)
     2557, -- To All The Squirrels Who Shared My Life (azeroth 2)
     5548, -- To All the Squirrels Who Cared for Me (cataclysm)
     6350, -- To All the Squirrels I Once Caressed? (mop)
 }
+addon.achievements = {}
 
--- Critter GUID to achievement ID
-ns.critters = {}
+-- Critter name to achievement ID
+addon.critters = {}
+addon.numCritters = 0
+function addon:OnLoad()
+    self:Debug'OnLoad'
 
-function ns:OnLoad()
-    self:Debug('OnLoad')
-    for _, a_id in pairs(achievements) do
-        self:Debug(GetAchievementLink(a_id))
-        for c =1, GetAchievementNumCriteria(a_id) do
-            local description, type, completed, _, _, _, _, asset_id, _, criteria_id = GetAchievementCriteriaInfo(a_id, c)
-            self:Debug(description, type, completed, asset_id, criteria_id)
-            if not completed then
-                self.critters[description] = a_id
+    if not self:CRITERIA_UPDATE(true) then
+        return
+    end
+
+    self:RegisterEvent'CRITERIA_UPDATE'
+    self:RegisterEvent'PLAYER_TARGET_CHANGED'
+
+    if InCombatLockdown() then
+        self:PLAYER_REGEN_DISABLED()
+    else
+        self:PLAYER_REGEN_ENABLED()
+    end
+end
+
+function addon:PLAYER_REGEN_ENABLED()
+    self:UnregisterEvent'PLAYER_REGEN_ENABLED'
+
+    self:RegisterEvent'UPDATE_MOUSEOVER_UNIT'
+    self:RegisterEvent'UNIT_TARGET'
+    self:RegisterEvent'PLAYER_REGEN_DISABLED'
+end
+
+function addon:PLAYER_REGEN_DISABLED()
+    self:RegisterEvent'PLAYER_REGEN_ENABLED'
+
+    self:UnregisterEvent'UPDATE_MOUSEOVER_UNIT'
+    self:UnregisterEvent'UNIT_TARGET'
+    self:UnregisterEvent'PLAYER_REGEN_DISABLED'
+end
+
+function addon:PLAYER_TARGET_CHANGED()
+    self:Scan('target')
+    self:Scan('targettarget')
+end
+
+function addon:UPDATE_MOUSEOVER_UNIT()
+    self:Scan('mouseover')
+    self:Scan('mouseovertarget')
+end
+
+function addon:UNIT_TARGET(unit)
+    if not unit or unit == 'player' then
+        return
+    end
+    self:Scan(unit)
+    self:Scan(unit..'target')
+end
+
+function addon:CRITERIA_UPDATE(loading)
+    local oldNumCritters = self.numCritters
+    if not loading then
+        wipe(self.achievements)
+        wipe(self.critters)
+        self.numCritters = 0
+    end
+    for idx, aid in pairs(self.achievementIds) do
+        local _, _, _, completed = GetAchievementInfo(aid)
+        if not completed then
+            self.achievements[aid] = GetAchievementLink(aid)
+        end
+
+        for cid =1, GetAchievementNumCriteria(aid) do
+            local name, _, completed =  GetAchievementCriteriaInfo(aid, cid)
+
+            if
+                not completed and
+                not self.critters[name]
+            then
+                self.critters[name] = aid
+                self.numCritters = self.numCritters + 1
             end
         end
     end
 
-    if not self:HasCrittersRemaining() then return end
+    if loading or oldNumCritters ~= self.numCritters then
+        return self:HasCrittersRemaining()
+    end
 end
 
-function ns:HasCrittersRemaining()
-    if #self.critters == 0 then
+function addon:HasCrittersRemaining()
+    if self.numCritters > 1 then
+        self:PrintFormatted(L.critters_remaining_plural, self.numCritters)
+        return true
+    elseif self.numCritters == 1 then
+        self:Print(L.critters_remaining_single)
         return true
     end
-    self:Print('Congratulations, you have found all the loveable critters in World of Warcraft!')
-    self:Print(self.title, ' is not turned off and will be disabled the next time you log in.')
+    self:Print(L.all_found)
+    self:PrintFormatted(L.addon_disabled, self.title)
     self:UnregisterAllEvents()
     DisableAddOn(self.name)
 end
 
-_G[ns.name] = ns
+do
+    local UnitExists = UnitExists
+    local UnitCanAttack = UnitCanAttack
+    local UnitCreatureType = UnitCreatureType
+    local UnitIsDead = UnitIsDead
+    local UnitName = UnitName
+
+    function addon:Scan(unit)
+        if
+            not UnitExists(unit) or
+            not UnitCanAttack('player', unit) or
+            UnitIsDead(unit) or
+            UnitCreatureType(unit) ~= L.Critter
+        then
+            return
+        end
+        local name = UnitName(unit)
+        if not name or not self.critters[name] then
+            return
+        end
+        local aid = self.critters[name]
+        local link = self.achievements[aid]
+
+        if name and link then
+            self:Debug(unit, name, link)
+            local message = L.found_message:format(EMOTE_LOVE, name, link)
+
+            self:Print(message)
+            RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])
+            PlaySoundFile("Sound\\Spells\\Valentines_Lookingforloveheart.ogg")
+        end
+    end
+end
+_G[addon.name] = addon

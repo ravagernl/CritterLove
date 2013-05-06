@@ -1,8 +1,9 @@
 ## Interface: 50200
-## Version: 50200.10
+## Version: 50200.11
 ## Author: Ravagernl
 ## Title:  Critter Love
 ## Notes: Alerts you when it finds critters which you haven't loved (/love emote) before.
 debug.lua
 events.lua
+localization.lua
 CritterLove.lua
