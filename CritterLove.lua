@@ -77,17 +77,17 @@ function addon:CRITERIA_UPDATE(loading)
         local _, _, _, completed = GetAchievementInfo(aid)
         if not completed then
             self.achievements[aid] = GetAchievementLink(aid)
-        end
 
-        for cid =1, GetAchievementNumCriteria(aid) do
-            local name, _, completed =  GetAchievementCriteriaInfo(aid, cid)
+            for cid =1, GetAchievementNumCriteria(aid) do
+                local name, _, completed =  GetAchievementCriteriaInfo(aid, cid)
 
-            if
-                not completed and
-                not self.critters[name]
-            then
-                self.critters[name] = aid
-                self.numCritters = self.numCritters + 1
+                if
+                    not completed and
+                    not self.critters[name]
+                then
+                    self.critters[name] = aid
+                    self.numCritters = self.numCritters + 1
+                end
             end
         end
     end
