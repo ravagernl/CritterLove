@@ -62,7 +62,7 @@ function addon:UNIT_TARGET(unit)
     if not unit or unit == 'player' then
         return
     end
-    self:Scan(unit)
+    -- units are party1, target etc. So need to scan unit.. target only
     self:Scan(unit..'target')
 end
 
