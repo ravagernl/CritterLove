@@ -66,6 +66,40 @@ function addon:UNIT_TARGET(unit)
     self:Scan(unit..'target')
 end
 
+do
+    local UnitExists = UnitExists
+    local UnitCanAttack = UnitCanAttack
+    local UnitCreatureType = UnitCreatureType
+    local UnitIsDead = UnitIsDead
+    local UnitName = UnitName
+
+    function addon:Scan(unit)
+        if
+            not UnitExists(unit) or
+            not UnitCanAttack('player', unit) or
+            UnitIsDead(unit) or
+            UnitCreatureType(unit) ~= L.Critter
+        then
+            return
+        end
+        local name = UnitName(unit)
+        if not name or not self.critters[name] then
+            return
+        end
+        local aid = self.critters[name]
+        local link = self.achievements[aid]
+
+        if name and link then
+            self:Debug(unit, name, link)
+            local message = L.found_message:format(EMOTE_LOVE, name, link)
+
+            self:Print(message)
+            RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])
+            PlaySoundFile("Sound\\Spells\\Valentines_Lookingforloveheart.ogg")
+        end
+    end
+end
+
 function addon:CRITERIA_UPDATE(loading)
     local oldNumCritters = self.numCritters
     if not loading then
@@ -111,37 +145,4 @@ function addon:HasCrittersRemaining()
     DisableAddOn(self.name)
 end
 
-do
-    local UnitExists = UnitExists
-    local UnitCanAttack = UnitCanAttack
-    local UnitCreatureType = UnitCreatureType
-    local UnitIsDead = UnitIsDead
-    local UnitName = UnitName
-
-    function addon:Scan(unit)
-        if
-            not UnitExists(unit) or
-            not UnitCanAttack('player', unit) or
-            UnitIsDead(unit) or
-            UnitCreatureType(unit) ~= L.Critter
-        then
-            return
-        end
-        local name = UnitName(unit)
-        if not name or not self.critters[name] then
-            return
-        end
-        local aid = self.critters[name]
-        local link = self.achievements[aid]
-
-        if name and link then
-            self:Debug(unit, name, link)
-            local message = L.found_message:format(EMOTE_LOVE, name, link)
-
-            self:Print(message)
-            RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])
-            PlaySoundFile("Sound\\Spells\\Valentines_Lookingforloveheart.ogg")
-        end
-    end
-end
 _G[addon.name] = addon
