@@ -1,5 +1,11 @@
 local _, addon = ...
-local L = setmetatable({}, { __index = function(t,k) t[k] = k return k end })
+local L = setmetatable({}, { __index = function(t,k)
+    if addon.debug then
+        error(addon.name..': localized string missing: '..k)
+    end
+    t[k] = k
+    return k
+end })
 
 L.addon_disabled = '%s is now turned off and will be disabled the next time you log in.'
 L.all_found = 'Congratulations, you have found all the loveable critters on this character.'
