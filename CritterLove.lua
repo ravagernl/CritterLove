@@ -10,17 +10,9 @@ addon.achievementIds = {
     5548, -- To All the Squirrels Who Cared for Me (cataclysm)
     6350, -- To All the Squirrels I Once Caressed? (mop)
 }
-addon.achievements = {}
 
--- Critter name to achievement ID
-addon.critters = {}
-addon.numCritters = 0
 function addon:OnLoad()
     self:Debug'OnLoad'
-
-    if not self:CRITERIA_UPDATE(true) then
-        return
-    end
 
     self:RegisterEvent'CRITERIA_UPDATE'
     self:RegisterEvent'PLAYER_TARGET_CHANGED'
@@ -100,13 +92,12 @@ do
     end
 end
 
-function addon:CRITERIA_UPDATE(loading)
+function addon:CRITERIA_UPDATE()
     local oldNumCritters = self.numCritters
-    if not loading then
-        wipe(self.achievements)
-        wipe(self.critters)
+    self.achievements = self.achievements and wipe(self.achievements) or {}
+    self.critters = self.critters and wipe(self.critters) or {}
         self.numCritters = 0
-    end
+
     for idx, aid in pairs(self.achievementIds) do
         local _, _, _, completed = GetAchievementInfo(aid)
         if not completed then
@@ -126,7 +117,7 @@ function addon:CRITERIA_UPDATE(loading)
         end
     end
 
-    if loading or oldNumCritters ~= self.numCritters then
+    if oldNumCritters ~= self.numCritters then
         return self:HasCrittersRemaining()
     end
 end
