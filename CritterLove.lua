@@ -41,13 +41,13 @@ function addon:PLAYER_REGEN_DISABLED()
 end
 
 function addon:PLAYER_TARGET_CHANGED()
-    self:Scan('target')
-    self:Scan('targettarget')
+    self:Scan'target'
+    self:Scan'targettarget'
 end
 
 function addon:UPDATE_MOUSEOVER_UNIT()
-    self:Scan('mouseover')
-    self:Scan('mouseovertarget')
+    self:Scan'mouseover'
+    self:Scan'mouseovertarget'
 end
 
 function addon:UNIT_TARGET(unit)
@@ -86,8 +86,8 @@ do
             local message = L.found_message:format(EMOTE_LOVE, name, link)
 
             self:Print(message)
-            RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])
-            PlaySoundFile("Sound\\Spells\\Valentines_Lookingforloveheart.ogg")
+            RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo['RAID_WARNING'])
+            PlaySoundFile'Sound\\Spells\\Valentines_Lookingforloveheart.ogg'
         end
     end
 end
@@ -96,7 +96,7 @@ function addon:CRITERIA_UPDATE()
     local oldNumCritters = self.numCritters
     self.achievements = self.achievements and wipe(self.achievements) or {}
     self.critters = self.critters and wipe(self.critters) or {}
-        self.numCritters = 0
+    self.numCritters = 0
 
     for idx, aid in pairs(self.achievementIds) do
         local _, _, _, completed = GetAchievementInfo(aid)

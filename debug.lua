@@ -1,7 +1,7 @@
 local name, addon = ...
 
 addon.name = name
-addon.title = GetAddOnMetadata(addon.name, "Title")
+addon.title = GetAddOnMetadata(addon.name, 'Title')
 
 do
     local debugf = tekDebug and tekDebug:GetFrame(addon.name)
@@ -17,7 +17,7 @@ do
 end
 
 do
-    local title = "|cFF33FF99".. addon.title .. "|r:"
+    local title = '|cFF33FF99'.. addon.title .. '|r:'
     local format = string.format
     function addon:Print(...) print(title, ...) end
     function addon:PrintFormatted(msg,...) print(title, format(msg, ...)) end

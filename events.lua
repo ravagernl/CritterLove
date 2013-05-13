@@ -1,6 +1,6 @@
 local _, addon = ...
 
-local frame = CreateFrame("Frame")
+local frame = CreateFrame'Frame'
 
 addon.eventFrame = frame
 function addon:RegisterEvent(event, func)
@@ -16,7 +16,7 @@ function addon:UnregisterEvent(event)
 end
 
 function addon:UnregisterAllEvents()
-    self:Debug('Unregistering all events')
+    self:Debug'Unregistering all events'
     frame:UnregisterAllEvents()
 end
 
@@ -35,11 +35,13 @@ do
         end
 
         ProcessOnLoad = nil
-        if not addon.ADDON_LOADED then frame:UnregisterEvent("ADDON_LOADED") end
+        if not addon.ADDON_LOADED then
+            frame:UnregisterEvent'ADDON_LOADED'
+        end
 
         self:SetScript('OnEvent', OnEvent)
     end
 
-    frame:RegisterEvent("ADDON_LOADED")
-    frame:SetScript("OnEvent", ProcessOnLoad)
+    frame:RegisterEvent'ADDON_LOADED'
+    frame:SetScript('OnEvent', ProcessOnLoad)
 end
