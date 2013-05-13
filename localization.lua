@@ -13,6 +13,4 @@ L.critters_remaining_plural = 'You have to find %d more critters on this charact
 L.critters_remaining_single = 'You have to find one more critter on this character.'
 L.found_message = 'You can /%s a nearby %s for %s!'
 
-L.Critter = 'Critter'
-
 addon.localization = L

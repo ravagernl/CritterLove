@@ -64,13 +64,14 @@ do
     local UnitCreatureType = UnitCreatureType
     local UnitIsDead = UnitIsDead
     local UnitName = UnitName
+    local CRITTER = BATTLE_PET_DAMAGE_NAME_5
 
     function addon:Scan(unit)
         if
             not UnitExists(unit) or
             not UnitCanAttack('player', unit) or
             UnitIsDead(unit) or
-            UnitCreatureType(unit) ~= L.Critter
+            UnitCreatureType(unit) ~= CRITTER
         then
             return
         end
