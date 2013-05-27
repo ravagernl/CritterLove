@@ -4,6 +4,7 @@ addon.localization = nil
 
 local EMOTE_LOVE = EMOTE152_TOKEN:lower()
 local InCombatLockdown = InCombatLockdown
+local SOUND = 'Sound\\Spells\\Valentines_Lookingforloveheart.ogg'
 
 addon.achievementIds = {
     1206, -- To All The Squirrels I've Loved Before (azeroth)
@@ -58,7 +59,7 @@ end
 
 function addon:PLAYER_TARGET_CHANGED()
     if self:Scan('target', true) then
-        PlaySoundFile'Sound\\Spells\\Valentines_Lookingforloveheart.ogg'
+        PlaySoundFile(SOUND)
         return DoEmote(EMOTE_LOVE)
     end
     self:Scan'targettarget'
@@ -108,7 +109,7 @@ do
 
                 self:Print(message)
                 RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo['RAID_WARNING'])
-                PlaySoundFile'Sound\\Spells\\Valentines_Lookingforloveheart.ogg'
+                PlaySoundFile(SOUND)
             end
             return true
         end
