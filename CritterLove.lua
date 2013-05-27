@@ -87,16 +87,14 @@ do
     --local CRITTER = BATTLE_PET_DAMAGE_NAME_5
 
     function addon:Scan(unit, suppress)
-        if
-            not UnitExists(unit) or
-            not UnitCanAttack('player', unit) or
-            UnitIsDead(unit) --or
-            --UnitCreatureType(unit) ~= CRITTER
-        then
-            return
-        end
         local name = UnitName(unit)
-        if not name or not self.critters[name] then
+        if not (name
+            and self.critters[name]
+            --and UnitExists(unit)
+            and UnitCanAttack('player', unit)
+            --and UnitIsDead(unit)
+            --and UnitCreatureType(unit) == CRITTER
+        ) then
             return
         end
         local aid = self.critters[name]
