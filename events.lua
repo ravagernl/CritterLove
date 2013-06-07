@@ -26,22 +26,20 @@ do
         if addon[event] then addon[event](addon, ...) end
     end
 
-    local function ProcessOnLoad(self, event, arg1)
-        if arg1 ~= addon.name then return end
-
+    local function ProcessOnLoad(self, event)
         if addon.OnLoad then
             addon:OnLoad()
             addon.OnLoad = nil
         end
 
         ProcessOnLoad = nil
-        if not addon.ADDON_LOADED then
-            frame:UnregisterEvent'ADDON_LOADED'
+        if not addon.PLAYER_LOGIN then
+            self:UnregisterEvent'PLAYER_LOGIN'
         end
 
         self:SetScript('OnEvent', OnEvent)
     end
 
-    frame:RegisterEvent'ADDON_LOADED'
+    frame:RegisterEvent'PLAYER_LOGIN'
     frame:SetScript('OnEvent', ProcessOnLoad)
 end

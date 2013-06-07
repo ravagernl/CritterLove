@@ -30,6 +30,8 @@ function addon:OnLoad()
     self:RegisterEvent'CRITERIA_UPDATE'
     self:RegisterEvent'PLAYER_TARGET_CHANGED'
 
+    -- Force criteria update when player logs in
+    self:CRITERIA_UPDATE()
     if InCombatLockdown() then
         self:PLAYER_REGEN_DISABLED()
     else
