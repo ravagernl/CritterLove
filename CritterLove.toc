@@ -1,5 +1,5 @@
 ## Interface: 50300
-## Version: 50300.16
+## Version: 50300.17
 ## Author: Ravagernl
 ## Title:  Critter Love
 ## Notes: Alerts you when it finds critters which you haven't loved (/love emote) before.
