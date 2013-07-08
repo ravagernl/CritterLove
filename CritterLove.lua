@@ -119,9 +119,11 @@ end
 do
     local sm = "\n/stopmacro [exists,nodead]\n"
     function addon:CRITERIA_UPDATE()
-        if not self.dirty and InCombatLockdown() then
-            self:Debug('postponing criteria update until after combat')
-            self.dirty = true
+        if InCombatLockdown() then
+            if not self.dirty then
+                self:Debug('postponing criteria update until after combat')
+                self.dirty = true
+            end
             return
         end
         self.dirty = false
